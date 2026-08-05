@@ -422,29 +422,88 @@
   var avatar = document.getElementById('avatar');
   var avatarCaption = document.getElementById('avatarCaption');
 
+  // Picks the warmest-sounding available English voice instead of whatever the browser
+  // defaults to (which is often a flat/robotic one). Preference list is ordered - first
+  // match wins. Falls back to any English voice, then to the browser default.
+  var SWEET_VOICE_NAMES = [
+    'Samantha', 'Google US English Female', 'Microsoft Zira', 'Microsoft Aria',
+    'Google UK English Female', 'Karen', 'Moira', 'Tessa', 'Victoria', 'Fiona'
+  ];
+  function pickSweetVoice(voices){
+    for (var i = 0; i < SWEET_VOICE_NAMES.length; i++){
+      var match = voices.find(function(v){ return v.name.indexOf(SWEET_VOICE_NAMES[i]) !== -1; });
+      if (match) return match;
+    }
+    var femaleish = voices.find(function(v){ return v.lang && v.lang.indexOf('en') === 0 && /female/i.test(v.name); });
+    if (femaleish) return femaleish;
+    return voices.find(function(v){ return v.lang && v.lang.indexOf('en') === 0; });
+  }
+
   function speakEnglish(text){
     if(!('speechSynthesis' in window)) return;
     var utter = new SpeechSynthesisUtterance(text);
     utter.lang = 'en-US';
+    // Slightly higher pitch + slightly slower pace reads as warmer/friendlier than the
+    // browser's flat default (pitch 1 / rate 1).
+    utter.pitch = 1.15;
+    utter.rate = 0.95;
     var voices = window.speechSynthesis.getVoices();
-    var enVoice = voices.find(function(v){ return v.lang && v.lang.indexOf('en') === 0; });
-    if(enVoice) utter.voice = enVoice;
+    var sweetVoice = pickSweetVoice(voices);
+    if(sweetVoice) utter.voice = sweetVoice;
     utter.onstart = function(){ avatar.classList.add('talking'); avatarCaption.textContent = 'Speaking...'; };
     utter.onend = function(){ avatar.classList.remove('talking'); avatarCaption.textContent = 'Merhaba! Konuşmaya hazırım 👋'; };
     window.speechSynthesis.speak(utter);
   }
 
-  // Placeholder "brain" - swap this out for a real Chatbase (or other AI) API call.
-  // Keep the contract simple: input = user's transcribed text (any language),
-  // output = a string, always in English.
+  // Voice list loads asynchronously in some browsers (esp. Chrome) - warm it up early so
+  // the first reply doesn't fall back to the default voice before the list is ready.
+  if('speechSynthesis' in window){
+    window.speechSynthesis.onvoiceschanged = function(){ window.speechSynthesis.getVoices(); };
+  }
+
+  // ---------- AI brain: Google Gemini free-tier API ----------
+  // 1. Get a free key (no card) at https://aistudio.google.com/apikey
+  // 2. In Google Cloud Console, restrict the key to HTTP referrer
+  //    "https://berksanakut-sketch.github.io/*" so it only works from this site.
+  // 3. Paste the key below. Leave empty to keep the placeholder reply.
+  var GEMINI_API_KEY = "";
+  // If this model name 404s later (Google renames/retires models over time), check
+  // https://aistudio.google.com for the current free-tier "flash" model name.
+  var GEMINI_MODEL = "gemini-2.0-flash";
+  var SYSTEM_PROMPT = "You are a warm, encouraging English-language assistant for " +
+    "'Ataşehir American VIP', an English language school in Ataşehir, Istanbul. " +
+    "The visitor may write in Turkish or English - it doesn't matter which. " +
+    "ALWAYS reply only in English, in 2-4 short, friendly sentences, as if gently " +
+    "coaching a language-school visitor. If relevant, invite them to call " +
+    "(0216) 519 95 95 or write on WhatsApp for enrollment details. Never invent " +
+    "prices, addresses or guarantees you don't know.";
+
   function getAIReply(userText){
-    return new Promise(function(resolve){
-      setTimeout(function(){
-        resolve("Thanks for your question! Our live AI tutor is being connected right now - " +
-          "in the meantime, feel free to call us at (0216) 519 95 95 or write on WhatsApp, " +
-          "and our team will help you in English right away.");
-      }, 500);
-    });
+    if(!GEMINI_API_KEY){
+      return Promise.resolve("Thanks for your question! Our live AI tutor is being connected right now - " +
+        "in the meantime, feel free to call us at (0216) 519 95 95 or write on WhatsApp, " +
+        "and our team will help you in English right away.");
+    }
+    var url = "https://generativelanguage.googleapis.com/v1beta/models/" + GEMINI_MODEL +
+      ":generateContent?key=" + GEMINI_API_KEY;
+    return fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        contents: [{ role: "user", parts: [{ text: userText }] }],
+        systemInstruction: { parts: [{ text: SYSTEM_PROMPT }] }
+      })
+    })
+      .then(function(r){ return r.json(); })
+      .then(function(data){
+        var text = data && data.candidates && data.candidates[0] && data.candidates[0].content &&
+          data.candidates[0].content.parts && data.candidates[0].content.parts[0] &&
+          data.candidates[0].content.parts[0].text;
+        return text ? text.trim() : "Sorry, I couldn't quite process that - please call us at (0216) 519 95 95.";
+      })
+      .catch(function(){
+        return "Sorry, I'm having trouble connecting right now. Please call us at (0216) 519 95 95 or write on WhatsApp.";
+      });
   }
 
   function handleTranscript(transcript){
