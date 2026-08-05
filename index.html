@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ataşehir American VIP | Yabancı Dil Kursu</title>
+<meta name="description" content="Ataşehir American VIP Yabancı Dil Kursu - deneyimli öğretmen kadrosu, modern sınıflar ve %100 öğrenci odaklı yaklaşımla İngilizce öğrenin.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy:#0b1f3a;
+    --navy-dark:#071527;
+    --navy-light:#132a4d;
+    --gold:#d4a853;
+    --gold-light:#f0d9a8;
+    --cream:#faf6ee;
+    --text-dark:#1c2532;
+    --text-muted:#5b6472;
+    --radius:16px;
+    --shadow:0 20px 40px -12px rgba(11,31,58,0.25);
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{font-family:'Inter',sans-serif;color:var(--text-dark);background:var(--cream);line-height:1.6;}
+  h1,h2,h3,.brand{font-family:'Poppins',sans-serif;}
+  a{text-decoration:none;color:inherit;}
+  img{max-width:100%;display:block;}
+  .container{max-width:1160px;margin:0 auto;padding:0 24px;}
+  .btn{display:inline-flex;align-items:center;gap:8px;padding:14px 28px;border-radius:999px;font-weight:600;font-size:15px;transition:transform .2s ease, box-shadow .2s ease;border:none;cursor:pointer;}
+  .btn:hover{transform:translateY(-2px);}
+  .btn-gold{background:var(--gold);color:var(--navy-dark);box-shadow:0 10px 24px -8px rgba(212,168,83,0.6);}
+  .btn-outline{background:rgba(255,255,255,0.08);color:#fff;border:1.5px solid rgba(255,255,255,0.4);}
+  .btn-whatsapp{background:#25D366;color:#fff;box-shadow:0 10px 24px -8px rgba(37,211,102,0.55);}
+  .btn-navy{background:var(--navy);color:#fff;}
+
+  /* ---------- Header ---------- */
+  header{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(11,31,58,0.92);backdrop-filter:blur(8px);}
+  .nav{display:flex;align-items:center;justify-content:space-between;padding:16px 24px;max-width:1160px;margin:0 auto;}
+  .brand{color:#fff;font-weight:700;font-size:19px;display:flex;align-items:center;gap:10px;}
+  .brand span{color:var(--gold);}
+  .nav-links{display:flex;gap:32px;color:#dfe6f0;font-weight:500;font-size:15px;}
+  .nav-links a:hover{color:var(--gold);}
+  .nav-cta{display:flex;align-items:center;gap:14px;}
+  .nav-phone{color:#fff;font-weight:600;font-size:15px;display:flex;align-items:center;gap:6px;}
+  .burger{display:none;background:none;border:none;color:#fff;font-size:26px;cursor:pointer;}
+
+  /* ---------- Hero ---------- */
+  .hero{position:relative;padding:170px 0 120px;overflow:hidden;
+    background:radial-gradient(ellipse at top right, var(--navy-light) 0%, var(--navy) 45%, var(--navy-dark) 100%);}
+  .hero::before{content:"";position:absolute;inset:0;opacity:.5;
+    background-image:radial-gradient(circle at 15% 25%, rgba(212,168,83,0.18) 0, transparent 40%),
+                      radial-gradient(circle at 85% 75%, rgba(212,168,83,0.12) 0, transparent 45%);}
+  .hero-grid{position:relative;display:grid;grid-template-columns:1.1fr 0.9fr;gap:60px;align-items:center;}
+  .eyebrow{display:inline-block;color:var(--gold);background:rgba(212,168,83,0.12);border:1px solid rgba(212,168,83,0.35);
+    padding:6px 16px;border-radius:999px;font-size:13px;font-weight:600;letter-spacing:.03em;margin-bottom:22px;}
+  .hero h1{color:#fff;font-size:clamp(32px,4.2vw,52px);font-weight:800;line-height:1.15;margin-bottom:20px;}
+  .hero h1 em{color:var(--gold);font-style:normal;}
+  .hero p{color:#c3ccdc;font-size:17px;max-width:520px;margin-bottom:34px;}
+  .hero-actions{display:flex;flex-wrap:wrap;gap:16px;margin-bottom:40px;}
+  .hero-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;max-width:560px;}
+  .hstat b{display:block;color:var(--gold);font-size:24px;font-family:'Poppins',sans-serif;font-weight:700;}
+  .hstat span{color:#9fadc2;font-size:12.5px;}
+  .hero-card{position:relative;background:linear-gradient(160deg,#ffffff,#f3ece0);border-radius:22px;padding:34px 30px;box-shadow:var(--shadow);}
+  .hero-card h3{font-size:20px;margin-bottom:6px;}
+  .hero-card p.muted{color:var(--text-muted);font-size:14px;margin-bottom:22px;}
+  .mini-form input, .mini-form select{width:100%;padding:13px 16px;border-radius:10px;border:1px solid #e4dbc8;background:#fff;margin-bottom:12px;font-size:14px;font-family:inherit;}
+  .mini-form label{font-size:12.5px;color:var(--text-muted);font-weight:600;display:block;margin-bottom:6px;}
+  .discount-badge{position:absolute;top:-14px;right:24px;background:var(--gold);color:var(--navy-dark);font-weight:700;font-size:12.5px;
+    padding:8px 14px;border-radius:999px;box-shadow:0 8px 18px -6px rgba(212,168,83,0.7);}
+
+  /* ---------- Sections generic ---------- */
+  section{padding:96px 0;}
+  .section-head{text-align:center;max-width:640px;margin:0 auto 56px;}
+  .kicker{color:var(--gold);text-transform:uppercase;letter-spacing:.08em;font-weight:700;font-size:13px;display:block;margin-bottom:10px;}
+  .section-head h2{font-size:clamp(26px,3vw,36px);font-weight:800;color:var(--navy-dark);}
+  .section-head p{color:var(--text-muted);margin-top:14px;font-size:15.5px;}
+
+  /* ---------- Programs ---------- */
+  .programs{background:#fff;}
+  .prog-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:26px;}
+  .prog-card{background:var(--cream);border-radius:var(--radius);padding:32px 28px;transition:transform .25s ease, box-shadow .25s ease;border:1px solid #efe6d4;}
+  .prog-card:hover{transform:translateY(-6px);box-shadow:var(--shadow);}
+  .prog-icon{width:52px;height:52px;border-radius:14px;background:var(--navy);color:var(--gold);display:flex;align-items:center;justify-content:center;font-size:24px;margin-bottom:20px;}
+  .prog-card h3{font-size:18.5px;margin-bottom:10px;}
+  .prog-card p{color:var(--text-muted);font-size:14.5px;margin-bottom:16px;}
+  .prog-card a{color:var(--navy);font-weight:700;font-size:14px;display:inline-flex;align-items:center;gap:6px;}
+  .prog-card a:hover{color:var(--gold);}
+
+  /* ---------- Why us ---------- */
+  .why{background:var(--navy-dark);color:#fff;position:relative;overflow:hidden;}
+  .why::before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 80% 20%, rgba(212,168,83,0.12), transparent 45%);}
+  .why .section-head h2, .why .section-head p{color:#fff;}
+  .why .section-head p{color:#b7c1d3;}
+  .why-grid{position:relative;display:grid;grid-template-columns:repeat(3,1fr);gap:22px;}
+  .why-card{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);border-radius:var(--radius);padding:28px;}
+  .why-card .num{color:var(--gold);font-family:'Poppins',sans-serif;font-weight:800;font-size:15px;margin-bottom:14px;display:block;}
+  .why-card h3{font-size:17px;margin-bottom:8px;}
+  .why-card p{color:#aab5c8;font-size:14px;}
+
+  /* ---------- Stats strip ---------- */
+  .stats-strip{background:var(--gold);padding:44px 0;}
+  .stats-grid{display:grid;grid-template-columns:repeat(4,1fr);text-align:center;gap:20px;}
+  .stats-grid b{display:block;font-family:'Poppins',sans-serif;font-size:30px;font-weight:800;color:var(--navy-dark);}
+  .stats-grid span{color:#4a3a1a;font-weight:600;font-size:13.5px;}
+
+  /* ---------- Contact ---------- */
+  .contact{background:#fff;}
+  .contact-grid{display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:start;}
+  .contact-info-card{background:var(--navy);color:#fff;border-radius:var(--radius);padding:36px 32px;}
+  .contact-info-card h3{font-size:20px;margin-bottom:22px;}
+  .info-row{display:flex;gap:14px;margin-bottom:20px;align-items:flex-start;}
+  .info-row .ic{width:38px;height:38px;border-radius:10px;background:rgba(212,168,83,0.18);color:var(--gold);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:16px;}
+  .info-row b{display:block;font-size:14.5px;}
+  .info-row span{color:#b7c1d3;font-size:13.5px;}
+  .contact-actions{display:flex;gap:12px;margin-top:26px;flex-wrap:wrap;}
+  .form-card{background:var(--cream);border-radius:var(--radius);padding:34px 30px;border:1px solid #efe6d4;}
+  .form-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+  .form-card input, .form-card select, .form-card textarea{width:100%;padding:13px 16px;border-radius:10px;border:1px solid #e4dbc8;background:#fff;margin-bottom:14px;font-size:14px;font-family:inherit;}
+  .form-note{font-size:12.5px;color:var(--text-muted);margin-top:-4px;margin-bottom:16px;}
+
+  footer{background:var(--navy-dark);color:#9fadc2;padding:40px 0;font-size:13.5px;}
+  .footer-grid{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px;}
+  .footer-links{display:flex;gap:22px;}
+  .footer-links a:hover{color:var(--gold);}
+
+  .float-whatsapp{position:fixed;bottom:26px;right:26px;background:#25D366;color:#fff;width:58px;height:58px;border-radius:50%;
+    display:flex;align-items:center;justify-content:center;font-size:28px;box-shadow:0 12px 28px -8px rgba(37,211,102,0.7);z-index:99;}
+
+  @media (max-width:940px){
+    .nav-links, .nav-phone{display:none;}
+    .burger{display:block;}
+    .hero-grid{grid-template-columns:1fr;}
+    .hero-stats{grid-template-columns:repeat(4,1fr);}
+    .prog-grid, .why-grid{grid-template-columns:1fr 1fr;}
+    .stats-grid{grid-template-columns:1fr 1fr;}
+    .contact-grid{grid-template-columns:1fr;}
+    .form-row{grid-template-columns:1fr;}
+  }
+  @media (max-width:600px){
+    .prog-grid, .why-grid{grid-template-columns:1fr;}
+    .hero-stats{grid-template-columns:1fr 1fr;}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="nav">
+    <div class="brand">🎓 Ataşehir <span>American VIP</span></div>
+    <nav class="nav-links">
+      <a href="#programlar">Programlar</a>
+      <a href="#neden-biz">Neden Biz</a>
+      <a href="#istatistik">Rakamlarla Biz</a>
+      <a href="#iletisim">İletişim</a>
+    </nav>
+    <div class="nav-cta">
+      <a class="nav-phone" href="tel:+902165199595">📞 (0216) 519 95 95</a>
+      <a class="btn btn-gold" href="#iletisim">Ücretsiz Bilgi Al</a>
+    </div>
+    <button class="burger">☰</button>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="container hero-grid">
+    <div>
+      <span class="eyebrow">Ataşehir'in Yabancı Dil Kurumu</span>
+      <h1>Hedefine Ulaş,<br><em>İngilizceyi</em> Bizimle Öğren!</h1>
+      <p>Modern bilimsel yöntemler ve bilişim teknolojilerini kullanarak yabancı dil eğitiminde köklü birikimini sürekli yenileyen çağdaş bir eğitim kurumu. Deneyimli öğretmen kadrosuyla yüz yüze eğitim, her seviyeye uygun programlar.</p>
+      <div class="hero-actions">
+        <a class="btn btn-gold" href="tel:+902165199595">📞 Hemen Ara</a>
+        <a class="btn btn-whatsapp" href="https://wa.me/902165199595?text=Merhaba%2C%20İngilizce%20kursu%20hakkında%20bilgi%20almak%20istiyorum." target="_blank" rel="noopener">💬 WhatsApp'tan Yaz</a>
+        <a class="btn btn-outline" href="#programlar">Programları İncele</a>
+      </div>
+      <div class="hero-stats">
+        <div class="hstat"><b>5100+</b><span>Mutlu Öğrenci</span></div>
+        <div class="hstat"><b>20+</b><span>Sınıf</span></div>
+        <div class="hstat"><b>37+</b><span>Kazanılan Ödül</span></div>
+        <div class="hstat"><b>4900+</b><span>Sertifika</span></div>
+      </div>
+    </div>
+
+    <div class="hero-card">
+      <span class="discount-badge">%10 Ekstra İndirim</span>
+      <h3>Seviye Tespit Sınavına Girin</h3>
+      <p class="muted">Formu doldurun, sizi arayıp uygun programı birlikte belirleyelim.</p>
+      <form class="mini-form" onsubmit="return sendToWhatsapp(event)">
+        <label>Ad Soyad</label>
+        <input id="hf-name" type="text" placeholder="Adınız Soyadınız" required>
+        <label>Telefon</label>
+        <input id="hf-phone" type="tel" placeholder="05xx xxx xx xx" required>
+        <label>İlgilendiğiniz Program</label>
+        <select id="hf-program">
+          <option>Genel İngilizce</option>
+          <option>Junior İngilizce (Çocuk/Genç)</option>
+          <option>Yaz Okulu</option>
+          <option>Sınav Hazırlık (IELTS / TOEFL)</option>
+          <option>Kurumsal İngilizce</option>
+        </select>
+        <button class="btn btn-navy" style="width:100%;justify-content:center;" type="submit">Bilgi Talep Et →</button>
+      </form>
+    </div>
+  </div>
+</section>
+
+<section class="programs" id="programlar">
+  <div class="container">
+    <div class="section-head">
+      <span class="kicker">Programlarımız</span>
+      <h2>Her Yaşa ve Seviyeye Uygun Dil Eğitimi</h2>
+      <p>İhtiyacınıza göre tasarlanmış, uzman kadromuz eşliğinde yürütülen programlarla hedefinize ulaşın.</p>
+    </div>
+    <div class="prog-grid">
+      <div class="prog-card">
+        <div class="prog-icon">🌞</div>
+        <h3>Yaz Okulu</h3>
+        <p>Yaz aylarında yoğunlaştırılmış, eğlenceli ve etkileşimli İngilizce programı.</p>
+        <a href="#iletisim">Detaylı Bilgi →</a>
+      </div>
+      <div class="prog-card">
+        <div class="prog-icon">🧒</div>
+        <h3>Junior İngilizce</h3>
+        <p>Çocuk ve gençlere özel, yaşa uygun materyallerle desteklenen dil gelişim programı.</p>
+        <a href="#iletisim">Detaylı Bilgi →</a>
+      </div>
+      <div class="prog-card">
+        <div class="prog-icon">📘</div>
+        <h3>Genel İngilizce</h3>
+        <p>Başlangıçtan ileri seviyeye, dört temel dil becerisini geliştiren kapsamlı müfredat.</p>
+        <a href="#iletisim">Detaylı Bilgi →</a>
+      </div>
+      <div class="prog-card">
+        <div class="prog-icon">🎯</div>
+        <h3>Sınav Hazırlık</h3>
+        <p>IELTS, TOEFL ve YDS gibi sınavlara yönelik hedefe odaklı hazırlık programları.</p>
+        <a href="#iletisim">Detaylı Bilgi →</a>
+      </div>
+      <div class="prog-card">
+        <div class="prog-icon">💼</div>
+        <h3>Kurumsal İngilizce</h3>
+        <p>Şirketlere özel, iş dünyasına yönelik pratik ve mesleki İngilizce eğitimi.</p>
+        <a href="#iletisim">Detaylı Bilgi →</a>
+      </div>
+      <div class="prog-card">
+        <div class="prog-icon">📝</div>
+        <h3>Seviye Tespit Sınavı</h3>
+        <p>Ücretsiz seviye tespit sınavıyla size en uygun programı birlikte belirleyelim.</p>
+        <a href="#iletisim">Sınava Katıl →</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="why" id="neden-biz">
+  <div class="container">
+    <div class="section-head">
+      <span class="kicker">Neden Ataşehir American VIP</span>
+      <h2>Güçlü Bir Başlangıç, Kalıcı Başarıyı Getirir</h2>
+      <p>Sürekli yenilenen eğitim anlayışımızla öğrencilerimizin yanındayız.</p>
+    </div>
+    <div class="why-grid">
+      <div class="why-card"><span class="num">01</span><h3>Deneyimli Öğretmen Kadrosu</h3><p>Yüz yüze eğitim veren, alanında uzman öğretmenlerle çalışıyoruz.</p></div>
+      <div class="why-card"><span class="num">02</span><h3>Her Seviyeye Uygun Programlar</h3><p>Başlangıçtan ileri seviyeye kadar herkese uygun müfredat seçenekleri.</p></div>
+      <div class="why-card"><span class="num">03</span><h3>Modern Sınıf Ortamı</h3><p>Güçlü kaynaklar ve teknolojiyle desteklenen çağdaş sınıflar.</p></div>
+      <div class="why-card"><span class="num">04</span><h3>Kariyerine Değer Kat</h3><p>Kariyerinize katkı sağlayacak pratik ve kalıcı dil becerileri kazanın.</p></div>
+      <div class="why-card"><span class="num">05</span><h3>%100 Öğrenci Odaklı</h3><p>Her öğrencinin bireysel ihtiyacına göre şekillenen yaklaşım.</p></div>
+      <div class="why-card"><span class="num">06</span><h3>Kanıtlanmış Sonuçlar</h3><p>5100'den fazla mutlu öğrenci ve binlerce sertifikayla kanıtlanmış başarı.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="stats-strip" id="istatistik">
+  <div class="container stats-grid">
+    <div><b>5100+</b><span>Mutlu Öğrenci</span></div>
+    <div><b>20+</b><span>Sınıf</span></div>
+    <div><b>37+</b><span>Kazanılan Ödül</span></div>
+    <div><b>4900+</b><span>Sertifika</span></div>
+  </div>
+</section>
+
+<section class="contact" id="iletisim">
+  <div class="container">
+    <div class="section-head">
+      <span class="kicker">İletişim</span>
+      <h2>Sorularınız İçin Bize Ulaşın</h2>
+      <p>Formu doldurun, %10 ekstra indirim fırsatını kaçırmayın — size en kısa sürede dönüş yapalım.</p>
+    </div>
+    <div class="contact-grid">
+      <div class="contact-info-card">
+        <h3>İletişim Bilgileri</h3>
+        <div class="info-row"><div class="ic">📞</div><div><b>Telefon</b><span>(0216) 519 95 95</span></div></div>
+        <div class="info-row"><div class="ic">💬</div><div><b>WhatsApp</b><span>Anında yanıt için yazın</span></div></div>
+        <div class="info-row"><div class="ic">📍</div><div><b>Adres</b><span>Ataşehir, İstanbul<br><em style="opacity:.7">(tam adres eklenecek)</em></span></div></div>
+        <div class="info-row"><div class="ic">🕒</div><div><b>Çalışma Saatleri</b><span>Hafta içi 09:00 - 20:00</span></div></div>
+        <div class="contact-actions">
+          <a class="btn btn-gold" href="tel:+902165199595">Hemen Ara</a>
+          <a class="btn btn-whatsapp" href="https://wa.me/902165199595" target="_blank" rel="noopener">WhatsApp Yaz</a>
+        </div>
+      </div>
+      <div class="form-card">
+        <h3 style="margin-bottom:6px;">Bilgi Formu</h3>
+        <p class="form-note">Gönder'e bastığınızda WhatsApp üzerinden mesajınız otomatik hazırlanır.</p>
+        <form onsubmit="return sendToWhatsapp(event, 'main')">
+          <div class="form-row">
+            <input id="mf-name" type="text" placeholder="Ad Soyad" required>
+            <input id="mf-phone" type="tel" placeholder="Telefon" required>
+          </div>
+          <select id="mf-program">
+            <option>Genel İngilizce</option>
+            <option>Junior İngilizce (Çocuk/Genç)</option>
+            <option>Yaz Okulu</option>
+            <option>Sınav Hazırlık (IELTS / TOEFL)</option>
+            <option>Kurumsal İngilizce</option>
+          </select>
+          <textarea id="mf-msg" rows="3" placeholder="Mesajınız (opsiyonel)"></textarea>
+          <button class="btn btn-navy" style="width:100%;justify-content:center;" type="submit">Gönder ve %10 İndirimi Kazan →</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="container footer-grid">
+    <div>© 2026 Ataşehir American VIP Yabancı Dil Kursu. Tüm hakları saklıdır.</div>
+    <div class="footer-links">
+      <a href="tel:+902165199595">Ara</a>
+      <a href="https://wa.me/902165199595" target="_blank" rel="noopener">WhatsApp</a>
+      <a href="#iletisim">İletişim</a>
+    </div>
+  </div>
+</footer>
+
+<a class="float-whatsapp" href="https://wa.me/902165199595" target="_blank" rel="noopener" aria-label="WhatsApp">💬</a>
+
+<script>
+function sendToWhatsapp(e, which){
+  e.preventDefault();
+  var prefix = which === 'main' ? 'mf' : 'hf';
+  var name = document.getElementById(prefix+'-name').value;
+  var phone = document.getElementById(prefix+'-phone').value;
+  var program = document.getElementById(prefix+'-program').value;
+  var msg = which === 'main' ? document.getElementById('mf-msg').value : '';
+  var text = 'Merhaba, ben ' + name + '. Telefon: ' + phone + '. İlgilendiğim program: ' + program + '.';
+  if(msg) text += ' Not: ' + msg;
+  window.open('https://wa.me/902165199595?text=' + encodeURIComponent(text), '_blank');
+  return false;
+}
+</script>
+
+</body>
+</html>
