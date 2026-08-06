@@ -472,13 +472,16 @@
   // that actually has free-tier quota right now. If this 404s later (Google renames/retires
   // models over time), check https://aistudio.google.com for the current free-tier alias.
   var GEMINI_MODEL = "gemini-flash-latest";
-  var SYSTEM_PROMPT = "You are a warm, encouraging English-language assistant for " +
-    "'Ataşehir American VIP', an English language school in Ataşehir, Istanbul. " +
-    "The visitor may write in Turkish or English - it doesn't matter which. " +
-    "ALWAYS reply only in English, in 2-4 short, friendly sentences, as if gently " +
-    "coaching a language-school visitor. If relevant, invite them to call " +
-    "(0216) 519 95 95 or write on WhatsApp for enrollment details. Never invent " +
-    "prices, addresses or guarantees you don't know.";
+  var SYSTEM_PROMPT = "You are a warm, casual, friendly English-speaking conversation buddy " +
+    "on the website of 'Ataşehir American VIP', an English language school in Ataşehir, " +
+    "Istanbul. The visitor may write in Turkish or English - it doesn't matter which. " +
+    "ALWAYS reply only in English, in 2-4 short, natural sentences, like chatting with a " +
+    "friendly native speaker - not a formal script. You can talk about ANYTHING the visitor " +
+    "brings up (daily life, opinions, jokes, random questions), the same way a real English " +
+    "conversation partner would, since that's genuinely useful English practice for them. " +
+    "Only steer toward the school (call (0216) 519 95 95 or WhatsApp) when the visitor " +
+    "actually asks about courses/enrollment - don't force it into unrelated chat. Never " +
+    "invent prices, addresses or guarantees you don't know.";
 
   function getAIReply(userText){
     if(!GEMINI_API_KEY){
@@ -544,7 +547,13 @@
       avatarCaption.textContent = 'Listening...';
     };
     recognition.onerror = function(e){
-      statusEl.textContent = 'Mikrofon hatası: ' + e.error + '. İzin verdiğinden emin ol.';
+      var messages = {
+        'not-allowed': 'Mikrofon izni engellenmiş. Mac: Sistem Ayarları → Gizlilik ve Güvenlik → Mikrofon → Chrome işaretli mi kontrol et. Ayrıca adres çubuğundaki 🔒 ikonundan site izninin "İzin Ver" olduğuna bak.',
+        'no-speech': 'Ses algılanmadı - mikrofon çalışıyor ama konuşma duyulmadı. Sistem Ayarları → Ses → Giriş\'te doğru mikrofonun seçili olduğunu kontrol et, sonra tekrar dene.',
+        'audio-capture': 'Mikrofon bulunamadı. Bilgisayarına/tarayıcına bağlı bir mikrofon olduğundan emin ol.',
+        'network': 'Bağlantı sorunu oldu, tekrar dene.'
+      };
+      statusEl.textContent = messages[e.error] || ('Mikrofon hatası: ' + e.error + '. İzin verdiğinden emin ol.');
     };
     recognition.onend = function(){
       listening = false;
