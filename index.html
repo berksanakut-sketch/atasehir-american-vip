@@ -155,7 +155,11 @@
     background:var(--navy-dark);transition:height .09s ease, border-radius .09s ease;}
   .avatar.talking .mouth{animation:talk .28s ease-in-out infinite;}
   @keyframes talk{0%,100%{height:6px;border-radius:6px;}50%{height:16px;border-radius:10px;}}
-  .avatar-caption{text-align:center;color:#dfe6f0;font-size:11.5px;padding:2px 12px 14px;background:var(--navy-light);}
+  .avatar-caption{text-align:center;color:#dfe6f0;font-size:11.5px;padding:2px 12px 8px;background:var(--navy-light);}
+  .lang-toggle{display:flex;justify-content:center;gap:8px;padding:0 12px 14px;background:var(--navy-light);}
+  .lang-btn{background:rgba(255,255,255,0.1);color:#dfe6f0;border:1px solid rgba(255,255,255,0.25);border-radius:999px;
+    padding:5px 14px;font-size:12px;font-weight:600;cursor:pointer;transition:background .15s ease;}
+  .lang-btn.active{background:var(--gold);color:var(--navy-dark);border-color:var(--gold);}
   .voice-log{padding:16px 18px;flex:1 1 auto;min-height:60px;overflow-y:auto;display:flex;flex-direction:column;gap:10px;font-size:13.5px;}
   .voice-msg{padding:10px 13px;border-radius:12px;max-width:88%;}
   .voice-msg.user{align-self:flex-end;background:var(--navy);color:#fff;border-bottom-right-radius:3px;}
@@ -376,8 +380,8 @@
 <div class="voice-panel" id="voicePanel">
   <div class="voice-panel-head">
     <div>
-      <b>🎓 İngilizce Pratik Asistanı</b>
-      <span>Türkçe konuşabilirsin, sana hep İngilizce cevap verir</span>
+      <b>🎓 American VIP Asistanı</b>
+      <span>İstersen Türkçe, istersen İngilizce konuş</span>
     </div>
     <button class="voice-panel-close" id="voiceClose">✕</button>
   </div>
@@ -389,9 +393,11 @@
     </div>
   </div>
   <div class="avatar-caption" id="avatarCaption">Merhaba! Konuşmaya hazırım 👋</div>
-  <div class="voice-log" id="voiceLog">
-    <div class="voice-msg ai"><span class="lbl">Assistant</span>Hi! Press the microphone and ask me anything about our English courses - in Turkish or English, I'll always reply in English. 🎤</div>
+  <div class="lang-toggle">
+    <button class="lang-btn active" id="langTr" type="button">🇹🇷 Türkçe</button>
+    <button class="lang-btn" id="langEn" type="button">🇬🇧 English</button>
   </div>
+  <div class="voice-log" id="voiceLog"></div>
   <div class="voice-status" id="voiceStatus"></div>
   <div class="voice-hint">Mikrofona bas, konuş, tekrar bas ve bitir. Tarayıcının mikrofon iznine "izin ver" demen gerekir.</div>
 </div>
@@ -423,34 +429,51 @@
 
   var avatar = document.getElementById('avatar');
   var avatarCaption = document.getElementById('avatarCaption');
+  var langTrBtn = document.getElementById('langTr');
+  var langEnBtn = document.getElementById('langEn');
 
-  // Picks the warmest-sounding available English voice instead of whatever the browser
-  // defaults to (which is often a flat/robotic one). Preference list is ordered - first
-  // match wins. Falls back to any English voice, then to the browser default.
-  var SWEET_VOICE_NAMES = [
-    'Samantha', 'Google US English Female', 'Microsoft Zira', 'Microsoft Aria',
-    'Google UK English Female', 'Karen', 'Moira', 'Tessa', 'Victoria', 'Fiona'
-  ];
-  function pickSweetVoice(voices){
-    for (var i = 0; i < SWEET_VOICE_NAMES.length; i++){
-      var match = voices.find(function(v){ return v.name.indexOf(SWEET_VOICE_NAMES[i]) !== -1; });
+  // Visitor's chosen language - drives speech recognition input lang, the reply language
+  // we ask Gemini for, and which TTS voice/lang we speak the reply back in. Defaults to
+  // Turkish since most visitors to a Turkish course site will land here speaking Turkish.
+  var selectedLang = 'tr';
+  function setLang(lang){
+    selectedLang = lang;
+    langTrBtn.classList.toggle('active', lang === 'tr');
+    langEnBtn.classList.toggle('active', lang === 'en');
+  }
+  langTrBtn.addEventListener('click', function(){ setLang('tr'); });
+  langEnBtn.addEventListener('click', function(){ setLang('en'); });
+
+  // Picks the warmest-sounding available voice for the given language instead of whatever
+  // the browser defaults to (which is often a flat/robotic one). Preference list is ordered -
+  // first match wins. Falls back to any voice in that language, then to the browser default.
+  var SWEET_VOICE_NAMES = {
+    en: ['Samantha', 'Google US English Female', 'Microsoft Zira', 'Microsoft Aria',
+      'Google UK English Female', 'Karen', 'Moira', 'Tessa', 'Victoria', 'Fiona'],
+    tr: ['Yelda', 'Google Türkçe', 'Microsoft Emel']
+  };
+  function pickSweetVoice(voices, lang){
+    var names = SWEET_VOICE_NAMES[lang] || [];
+    for (var i = 0; i < names.length; i++){
+      var match = voices.find(function(v){ return v.name.indexOf(names[i]) !== -1; });
       if (match) return match;
     }
-    var femaleish = voices.find(function(v){ return v.lang && v.lang.indexOf('en') === 0 && /female/i.test(v.name); });
+    var prefix = lang === 'tr' ? 'tr' : 'en';
+    var femaleish = voices.find(function(v){ return v.lang && v.lang.indexOf(prefix) === 0 && /female/i.test(v.name); });
     if (femaleish) return femaleish;
-    return voices.find(function(v){ return v.lang && v.lang.indexOf('en') === 0; });
+    return voices.find(function(v){ return v.lang && v.lang.indexOf(prefix) === 0; });
   }
 
-  function speakEnglish(text){
+  function speakReply(text, lang){
     if(!('speechSynthesis' in window)) return;
     var utter = new SpeechSynthesisUtterance(text);
-    utter.lang = 'en-US';
+    utter.lang = lang === 'tr' ? 'tr-TR' : 'en-US';
     // Slightly higher pitch + slightly slower pace reads as warmer/friendlier than the
     // browser's flat default (pitch 1 / rate 1).
     utter.pitch = 1.15;
     utter.rate = 0.95;
     var voices = window.speechSynthesis.getVoices();
-    var sweetVoice = pickSweetVoice(voices);
+    var sweetVoice = pickSweetVoice(voices, lang);
     if(sweetVoice) utter.voice = sweetVoice;
     utter.onstart = function(){ avatar.classList.add('talking'); avatarCaption.textContent = 'Speaking...'; };
     utter.onend = function(){ avatar.classList.remove('talking'); avatarCaption.textContent = 'Merhaba! Konuşmaya hazırım 👋'; };
@@ -471,29 +494,32 @@
   // no key is ever shipped to the client.
   var AI_PROXY_URL = "https://atasehir-gemini-proxy.berk-sanakut.workers.dev";
 
-  function getAIReply(userText){
+  function getAIReply(userText, lang){
+    var fallback = lang === 'tr'
+      ? "Üzgünüm, şu an bağlanamadım - lütfen (0216) 519 95 95'i arayın ya da WhatsApp'tan yazın."
+      : "Sorry, I'm having trouble connecting right now. Please call us at (0216) 519 95 95 or write on WhatsApp.";
     return fetch(AI_PROXY_URL, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ text: userText })
+      body: JSON.stringify({ text: userText, lang: lang })
     })
       .then(function(r){ return r.json(); })
       .then(function(data){
         var text = data && data.text;
-        return text ? text.trim() : "Sorry, I couldn't quite process that - please call us at (0216) 519 95 95.";
+        return text ? text.trim() : fallback;
       })
       .catch(function(){
-        return "Sorry, I'm having trouble connecting right now. Please call us at (0216) 519 95 95 or write on WhatsApp.";
+        return fallback;
       });
   }
 
   function handleTranscript(transcript){
     addMsg('user', transcript);
-    statusEl.textContent = 'Thinking...';
-    getAIReply(transcript).then(function(reply){
+    statusEl.textContent = selectedLang === 'tr' ? 'Düşünüyorum...' : 'Thinking...';
+    getAIReply(transcript, selectedLang).then(function(reply){
       statusEl.textContent = '';
       addMsg('ai', reply);
-      speakEnglish(reply);
+      speakReply(reply, selectedLang);
     });
   }
 
@@ -529,7 +555,7 @@
       return;
     }
     recognition = new SpeechRecognitionCtor();
-    recognition.lang = 'tr-TR';
+    recognition.lang = selectedLang === 'tr' ? 'tr-TR' : 'en-US';
     recognition.interimResults = false;
     recognition.maxAlternatives = 1;
 
@@ -562,6 +588,25 @@
   closeBtn.addEventListener('click', function(){
     panel.classList.remove('open');
     if(listening && recognition) recognition.stop();
+  });
+
+  // ---------- Auto-greeting on page load ----------
+  // Opens the panel by itself shortly after the page loads and has the avatar say hello,
+  // instead of waiting for the visitor to notice and click the mic button. Speech
+  // synthesis without a prior user gesture is unreliable on some browsers (notably
+  // Safari/iOS - see the unlockSpeechSynthesis comment below), so this always shows the
+  // greeting as text regardless, and only *attempts* to speak it - if the browser blocks
+  // the audio, the visitor still sees a working, welcoming panel.
+  var GREETING_TR = "Merhaba! Ataşehir American VIP'e hoş geldiniz 👋 İster Türkçe ister İngilizce - nasıl konuşmak istersen, mikrofona basıp bana sorabilirsin.";
+  var GREETING_EN = "Hi there! Welcome to Ataşehir American VIP 👋 You can speak Turkish or English, whichever you like - just press the microphone and ask me anything.";
+  function greet(){
+    openPanel();
+    var text = selectedLang === 'tr' ? GREETING_TR : GREETING_EN;
+    addMsg('ai', text);
+    speakReply(text, selectedLang);
+  }
+  window.addEventListener('load', function(){
+    setTimeout(greet, 1200);
   });
 })();
 

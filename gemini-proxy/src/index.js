@@ -12,16 +12,24 @@
 
 const ALLOWED_ORIGIN = "https://berksanakut-sketch.github.io";
 const GEMINI_MODEL = "gemini-flash-latest";
-const SYSTEM_PROMPT = "You are a warm, casual, friendly English-speaking conversation buddy " +
-  "on the website of 'Ataşehir American VIP', an English language school in Ataşehir, " +
-  "Istanbul. The visitor may write in Turkish or English - it doesn't matter which. " +
-  "ALWAYS reply only in English, in 2-4 short, natural sentences, like chatting with a " +
-  "friendly native speaker - not a formal script. You can talk about ANYTHING the visitor " +
-  "brings up (daily life, opinions, jokes, random questions), the same way a real English " +
-  "conversation partner would, since that's genuinely useful English practice for them. " +
-  "Only steer toward the school (call (0216) 519 95 95 or WhatsApp) when the visitor " +
-  "actually asks about courses/enrollment - don't force it into unrelated chat. Never " +
-  "invent prices, addresses or guarantees you don't know.";
+
+// The frontend has a Turkish/English toggle the visitor picks before talking, and passes
+// it through as `lang`. Reply language now follows that toggle (previously this always
+// forced English replies regardless of what the visitor chose or spoke).
+function buildSystemPrompt(lang) {
+  var replyLanguageLine = lang === "tr"
+    ? "ALWAYS reply only in Turkish (Türkçe), in 2-4 short, natural sentences."
+    : "ALWAYS reply only in English, in 2-4 short, natural sentences.";
+  return "You are a warm, casual, friendly conversation buddy on the website of " +
+    "'Ataşehir American VIP', an English language school in Ataşehir, Istanbul. " +
+    replyLanguageLine + " Sound like chatting with a friendly native speaker - not a " +
+    "formal script. You can talk about ANYTHING the visitor brings up (daily life, " +
+    "opinions, jokes, random questions), the same way a real conversation partner would, " +
+    "since that's genuinely useful practice for them. Only steer toward the school " +
+    "(call (0216) 519 95 95 or WhatsApp) when the visitor actually asks about " +
+    "courses/enrollment - don't force it into unrelated chat. Never invent prices, " +
+    "addresses or guarantees you don't know.";
+}
 
 function corsHeaders() {
   return {
@@ -41,10 +49,11 @@ export default {
       return new Response("Method not allowed", { status: 405, headers: corsHeaders() });
     }
 
-    let userText;
+    let userText, lang;
     try {
       const body = await request.json();
       userText = body && body.text;
+      lang = body && body.lang === "tr" ? "tr" : "en";
     } catch (e) {
       return new Response("Bad request", { status: 400, headers: corsHeaders() });
     }
@@ -60,7 +69,7 @@ export default {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         contents: [{ role: "user", parts: [{ text: userText }] }],
-        systemInstruction: { parts: [{ text: SYSTEM_PROMPT }] },
+        systemInstruction: { parts: [{ text: buildSystemPrompt(lang) }] },
       }),
     });
 
