@@ -599,7 +599,7 @@
       // start listening again automatically - this is what makes it a back-and-forth
       // conversation instead of a "press mic every single turn" widget.
       speakReply(reply, replyLang, function(){
-        if(conversationActive) setTimeout(function(){ startListening(true); }, 300);
+        if(conversationActive) setTimeout(startListening, 300);
       });
     });
   }
@@ -635,12 +635,7 @@
     avatarCaption.textContent = 'Merhaba! Konuşmaya hazırım 👋';
   }
 
-  // isRestart: true when this call is a programmatic re-listen (from conversation mode
-  // auto-continuing, or retrying after silence) rather than a direct tap on the mic button.
-  // Some browsers (notably iOS Safari) only grant mic access inside a real, direct user
-  // gesture and silently refuse a *programmatic* restart with a 'not-allowed' error even
-  // though the visitor already granted permission moments earlier - see onerror below.
-  function startListening(isRestart){
+  function startListening(){
     if(!SpeechRecognitionCtor){
       statusEl.textContent = 'Bu tarayıcı sesli tanımayı desteklemiyor (Chrome dene).';
       conversationActive = false;
@@ -664,17 +659,6 @@
       // quietly (via onend below) reads much better than surfacing a scary permissions
       // message every few seconds while nobody's talking.
       if(e.error === 'no-speech' && conversationActive) return;
-      if(e.error === 'not-allowed' && isRestart){
-        // Permission was already granted (this is a restart, not the first press) - this
-        // device just doesn't allow re-starting the mic without a fresh tap. End the
-        // hands-free loop with an accurate explanation instead of the generic "check your
-        // permissions" message below, which would be misleading here.
-        conversationActive = false;
-        micLabel.textContent = 'Konuşmaya Başla';
-        statusEl.textContent = 'Bu cihazda her mesajdan önce mikrofona tekrar basman gerekiyor.';
-        avatarCaption.textContent = 'Merhaba! Konuşmaya hazırım 👋';
-        return;
-      }
       var messages = {
         'not-allowed': 'Mikrofon izni engellenmiş. Mac: Sistem Ayarları → Gizlilik ve Güvenlik → Mikrofon → Chrome işaretli mi kontrol et. Ayrıca adres çubuğundaki 🔒 ikonundan site izninin "İzin Ver" olduğuna bak.',
         'no-speech': 'Ses algılanmadı - mikrofon çalışıyor ama konuşma duyulmadı. Sistem Ayarları → Ses → Giriş\'te doğru mikrofonun seçili olduğunu kontrol et, sonra tekrar dene.',
@@ -691,7 +675,7 @@
       // Recognition ended without picking anything up (silence timeout) - if the session
       // is still active, just listen again instead of making the visitor press the button.
       if(conversationActive && !gotResult){
-        setTimeout(function(){ if(conversationActive) startListening(true); }, 400);
+        setTimeout(function(){ if(conversationActive) startListening(); }, 400);
       }
     };
     recognition.onresult = function(event){
@@ -734,51 +718,29 @@
   // card scrolls into view keeps the sound and its visual source in sync.
   var GREETING_TR = "Merhaba! Ataşehir American VIP'e hoş geldiniz 👋 Kurslar hakkında ya da aklına gelen her şeyi bana sorabilirsin - yazarak ya da mikrofona basıp konuşarak, sen nasıl istersen.";
   var GREETING_EN = "Hi there! Welcome to Ataşehir American VIP 👋 Ask me anything about our courses, or really anything at all - you can type or press the microphone to talk, whichever you like.";
-  // Text only, deliberately no speechSynthesis here. This fires with no click behind it
-  // (scroll into view / page load), and mobile Safari's autoplay-audio rule turned out to
-  // be too inconsistent to chase reliably across devices - tap-to-unlock attempts here just
-  // produced a confusing "sometimes it talks, sometimes it doesn't" experience. Real replies
-  // (mic button or typed question) are always gesture-adjacent and speak reliably - that's
-  // proven and stays as-is. The greeting settles for being instantly, reliably visible as
-  // text everywhere instead of unreliably audible on some devices.
   function greet(){
     var text = selectedLang === 'tr' ? GREETING_TR : GREETING_EN;
     addMsg('ai', text);
+    speakReply(text, selectedLang);
   }
   var aiCard = document.querySelector('.ai-card');
-  var greeted = false;
-  var greetObserver = null;
-  function armGreetObserver(){
-    if(!('IntersectionObserver' in window) || !aiCard){
-      // Very old browsers without IntersectionObserver support: fall back to a plain
-      // load-triggered greeting rather than never greeting at all.
-      setTimeout(greet, 1200);
-      return;
-    }
-    greetObserver = new IntersectionObserver(function(entries){
+  if('IntersectionObserver' in window && aiCard){
+    var greeted = false;
+    var observer = new IntersectionObserver(function(entries){
       entries.forEach(function(entry){
         if(entry.isIntersecting && !greeted){
           greeted = true;
           setTimeout(greet, 400);
-          greetObserver.disconnect();
+          observer.disconnect();
         }
       });
     }, { threshold: 0.4 });
-    greetObserver.observe(aiCard);
+    observer.observe(aiCard);
+  } else {
+    // Very old browsers without IntersectionObserver support: fall back to the old
+    // load-triggered greeting rather than never greeting at all.
+    window.addEventListener('load', function(){ setTimeout(greet, 1200); });
   }
-  armGreetObserver();
-
-  // iOS Safari (and some other mobile browsers) often restore the page from the
-  // back/forward cache on "reload"/revisit instead of doing a real fresh load - the whole
-  // page's JS state (including the `greeted` flag above) survives untouched, so the normal
-  // IntersectionObserver never fires again and the assistant stays silent. Detect that via
-  // the pageshow event's `persisted` flag and re-arm the greeting in that case.
-  window.addEventListener('pageshow', function(e){
-    if(!e.persisted) return;
-    greeted = false;
-    if(greetObserver) greetObserver.disconnect();
-    armGreetObserver();
-  });
 
   // ---------- Hide the floating WhatsApp bubble while the AI card is on screen ----------
   // Both are position:fixed at the same bottom-right corner; the AI card's own scrollable
