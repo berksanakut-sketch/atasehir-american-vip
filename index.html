@@ -375,7 +375,7 @@
 
 <a class="float-whatsapp" href="https://wa.me/902165199595" target="_blank" rel="noopener" aria-label="WhatsApp">💬</a>
 
-<button class="float-mic" id="micBtn" aria-label="Sesli İngilizce Pratik" title="Mikrofona bas, Türkçe veya İngilizce konuş - sana İngilizce yanıt verelim">🎤</button>
+<button class="float-mic" id="micBtn" aria-label="Sesli İngilizce Pratik" title="Bir kere bas, konuşmaya başla - sohbet otomatik devam eder, bitirmek için tekrar bas">🎤</button>
 
 <div class="voice-panel" id="voicePanel">
   <div class="voice-panel-head">
@@ -399,7 +399,7 @@
   </div>
   <div class="voice-log" id="voiceLog"></div>
   <div class="voice-status" id="voiceStatus"></div>
-  <div class="voice-hint">Mikrofona bas, konuş, tekrar bas ve bitir. Tarayıcının mikrofon iznine "izin ver" demen gerekir.</div>
+  <div class="voice-hint">Mikrofona bir kere bas ve konuş - cevap bitince otomatik tekrar dinler, sohbeti bitirmek için mikrofona tekrar bas. Tarayıcının mikrofon iznine "izin ver" demen gerekir.</div>
 </div>
 
 <script>
@@ -472,8 +472,8 @@
     return text.replace(/\p{Extended_Pictographic}/gu, '').replace(/\s{2,}/g, ' ').trim();
   }
 
-  function speakReply(text, lang){
-    if(!('speechSynthesis' in window)) return;
+  function speakReply(text, lang, onDone){
+    if(!('speechSynthesis' in window)){ if(onDone) onDone(); return; }
     var utter = new SpeechSynthesisUtterance(stripEmojiForSpeech(text));
     utter.lang = lang === 'tr' ? 'tr-TR' : 'en-US';
     // Slightly higher pitch + slower pace + a touch more warmth reads friendlier than the
@@ -486,7 +486,11 @@
     var sweetVoice = pickSweetVoice(voices, lang);
     if(sweetVoice) utter.voice = sweetVoice;
     utter.onstart = function(){ avatar.classList.add('talking'); avatarCaption.textContent = 'Speaking...'; };
-    utter.onend = function(){ avatar.classList.remove('talking'); avatarCaption.textContent = 'Merhaba! Konuşmaya hazırım 👋'; };
+    utter.onend = function(){
+      avatar.classList.remove('talking');
+      avatarCaption.textContent = 'Merhaba! Konuşmaya hazırım 👋';
+      if(onDone) onDone();
+    };
     window.speechSynthesis.speak(utter);
   }
 
@@ -542,7 +546,12 @@
     getAIReply(transcript, replyLang).then(function(reply){
       statusEl.textContent = '';
       addMsg('ai', reply);
-      speakReply(reply, replyLang);
+      // Once the reply finishes being spoken, and the visitor hasn't ended the session,
+      // start listening again automatically - this is what makes it a back-and-forth
+      // conversation instead of a "press mic every single turn" widget.
+      speakReply(reply, replyLang, function(){
+        if(conversationActive) setTimeout(startListening, 300);
+      });
     });
   }
 
@@ -566,17 +575,27 @@
     window.speechSynthesis.speak(unlock);
   }
 
-  micBtn.addEventListener('click', function(){
-    unlockSpeechSynthesis();
-    openPanel();
+  // Conversation mode: one mic press starts a hands-free back-and-forth (listen -> AI
+  // replies -> automatically listens again) instead of requiring a press for every single
+  // turn. A second press (or closing the panel) ends the whole session.
+  var conversationActive = false;
+
+  function stopConversation(){
+    conversationActive = false;
+    if(listening && recognition) recognition.stop();
+    if('speechSynthesis' in window) window.speechSynthesis.cancel();
+    micBtn.classList.remove('listening');
+    statusEl.textContent = '';
+    avatarCaption.textContent = 'Merhaba! Konuşmaya hazırım 👋';
+  }
+
+  function startListening(){
     if(!SpeechRecognitionCtor){
       statusEl.textContent = 'Bu tarayıcı sesli tanımayı desteklemiyor (Chrome dene).';
+      conversationActive = false;
       return;
     }
-    if(listening){
-      recognition.stop();
-      return;
-    }
+    var gotResult = false;
     recognition = new SpeechRecognitionCtor();
     recognition.lang = selectedLang === 'tr' ? 'tr-TR' : 'en-US';
     recognition.interimResults = false;
@@ -589,6 +608,10 @@
       avatarCaption.textContent = 'Listening...';
     };
     recognition.onerror = function(e){
+      // In conversation mode, silence just means "visitor hasn't spoken yet" - restarting
+      // quietly (via onend below) reads much better than surfacing a scary permissions
+      // message every few seconds while nobody's talking.
+      if(e.error === 'no-speech' && conversationActive) return;
       var messages = {
         'not-allowed': 'Mikrofon izni engellenmiş. Mac: Sistem Ayarları → Gizlilik ve Güvenlik → Mikrofon → Chrome işaretli mi kontrol et. Ayrıca adres çubuğundaki 🔒 ikonundan site izninin "İzin Ver" olduğuna bak.',
         'no-speech': 'Ses algılanmadı - mikrofon çalışıyor ama konuşma duyulmadı. Sistem Ayarları → Ses → Giriş\'te doğru mikrofonun seçili olduğunu kontrol et, sonra tekrar dene.',
@@ -596,21 +619,39 @@
         'network': 'Bağlantı sorunu oldu, tekrar dene.'
       };
       statusEl.textContent = messages[e.error] || ('Mikrofon hatası: ' + e.error + '. İzin verdiğinden emin ol.');
+      if(e.error === 'not-allowed' || e.error === 'audio-capture') conversationActive = false;
     };
     recognition.onend = function(){
       listening = false;
       micBtn.classList.remove('listening');
+      // Recognition ended without picking anything up (silence timeout) - if the session
+      // is still active, just listen again instead of making the visitor press the button.
+      if(conversationActive && !gotResult){
+        setTimeout(function(){ if(conversationActive) startListening(); }, 400);
+      }
     };
     recognition.onresult = function(event){
+      gotResult = true;
       var transcript = event.results[0][0].transcript;
       handleTranscript(transcript);
     };
     recognition.start();
+  }
+
+  micBtn.addEventListener('click', function(){
+    unlockSpeechSynthesis();
+    openPanel();
+    if(conversationActive){
+      stopConversation();
+      return;
+    }
+    conversationActive = true;
+    startListening();
   });
 
   closeBtn.addEventListener('click', function(){
     panel.classList.remove('open');
-    if(listening && recognition) recognition.stop();
+    stopConversation();
   });
 
   // ---------- Auto-greeting on page load ----------
