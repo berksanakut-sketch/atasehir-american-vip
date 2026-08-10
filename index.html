@@ -677,13 +677,12 @@
     handleTranscript(value);
   });
 
-  // ---------- Auto-greeting on page load ----------
-  // Has the avatar say hello shortly after the page loads, instead of waiting for the
-  // visitor to notice and press the mic themselves. Speech synthesis without a prior user
-  // gesture is unreliable on some browsers (notably Safari/iOS - see the
-  // unlockSpeechSynthesis comment below), so this always shows the greeting as text
-  // regardless, and only *attempts* to speak it - if the browser blocks the audio, the
-  // visitor still sees a working, welcoming assistant.
+  // ---------- Greeting when the AI section actually comes into view ----------
+  // The assistant now lives in its own section below the hero, not a popup that appears
+  // over whatever the visitor is looking at - so greeting immediately on page load (like
+  // before) meant the voice played while the visitor was still up in the hero, with no
+  // avatar on screen to explain where the sound was coming from. Greeting only once the
+  // card scrolls into view keeps the sound and its visual source in sync.
   var GREETING_TR = "Merhaba! Ataşehir American VIP'e hoş geldiniz 👋 Kurslar hakkında ya da aklına gelen her şeyi bana sorabilirsin - yazarak ya da mikrofona basıp konuşarak, sen nasıl istersen.";
   var GREETING_EN = "Hi there! Welcome to Ataşehir American VIP 👋 Ask me anything about our courses, or really anything at all - you can type or press the microphone to talk, whichever you like.";
   function greet(){
@@ -691,9 +690,24 @@
     addMsg('ai', text);
     speakReply(text, selectedLang);
   }
-  window.addEventListener('load', function(){
-    setTimeout(greet, 1200);
-  });
+  var aiCard = document.querySelector('.ai-card');
+  if('IntersectionObserver' in window && aiCard){
+    var greeted = false;
+    var observer = new IntersectionObserver(function(entries){
+      entries.forEach(function(entry){
+        if(entry.isIntersecting && !greeted){
+          greeted = true;
+          setTimeout(greet, 400);
+          observer.disconnect();
+        }
+      });
+    }, { threshold: 0.4 });
+    observer.observe(aiCard);
+  } else {
+    // Very old browsers without IntersectionObserver support: fall back to the old
+    // load-triggered greeting rather than never greeting at all.
+    window.addEventListener('load', function(){ setTimeout(greet, 1200); });
+  }
 })();
 
 function sendToWhatsapp(e, which){
