@@ -187,6 +187,14 @@
     .prog-grid, .why-grid{grid-template-columns:1fr;}
     .hero-stats{grid-template-columns:1fr 1fr;}
   }
+  @media (max-width:480px){
+    /* The chat widget used fixed 320px width + asymmetric right-only margin, which left
+       lopsided, cramped gutters on narrow phones (e.g. 44px left / 26px right on a 390px
+       screen). Full-bleed with even side margins uses the screen properly instead. */
+    .voice-panel{width:auto;left:14px;right:14px;bottom:142px;max-height:min(560px, calc(100vh - 162px));}
+    .float-mic{right:14px;bottom:78px;width:52px;height:52px;font-size:23px;}
+    .float-whatsapp{right:14px;bottom:16px;width:52px;height:52px;font-size:25px;}
+  }
 </style>
 </head>
 <body>
