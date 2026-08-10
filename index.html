@@ -129,7 +129,8 @@
 
   /* ---------- AI assistant showcase (the site's "heart" - a real section, not a hidden
      corner widget) ---------- */
-  .ai-showcase{background:var(--navy-dark);color:#fff;position:relative;overflow:hidden;}
+  .ai-showcase{background:var(--navy-dark);color:#fff;position:relative;overflow:hidden;
+    padding-top:150px;}
   .ai-showcase::before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 20% 20%, rgba(212,168,83,0.16), transparent 45%);}
   .ai-showcase .section-head h2, .ai-showcase .section-head p{color:#fff;}
   .ai-showcase .section-head p{color:#b7c1d3;}
@@ -139,24 +140,24 @@
   /* ---------- Illustrated robot avatar (Ludo-generated), split into independently
      animated layers - body (static), left/right arm (gesture while idle/talking), mouth
      (opens/closes while talking) - instead of one flat image, for a more "alive" feel. */
-  .avatar{width:180px;height:184.9px;position:relative;animation:bob 3s ease-in-out infinite;}
-  @keyframes bob{0%,100%{transform:translateY(0);}50%{transform:translateY(-4px);}}
+  .avatar{width:180px;height:184.9px;position:relative;animation:bob 3.4s ease-in-out infinite;}
+  @keyframes bob{0%,100%{transform:translateY(0);}50%{transform:translateY(-2.5px);}}
   .robot-layer{position:absolute;display:block;width:100%;height:100%;top:0;left:0;}
   .robot-body{width:100%;height:100%;}
   .robot-arm{width:auto;height:auto;}
   .robot-arm-left{left:0%;top:21.66%;width:36.66%;height:25.18%;
-    transform-origin:91.8% 18.6%;animation:armSwayLeft 3.6s ease-in-out infinite;}
+    transform-origin:91.8% 18.6%;animation:armSwayLeft 4s ease-in-out infinite;}
   .robot-arm-right{left:63.70%;top:21.08%;width:36.30%;height:25.76%;
-    transform-origin:8.3% 18.2%;animation:armSwayRight 3.6s ease-in-out infinite;}
-  @keyframes armSwayLeft{0%,100%{transform:rotate(0deg);}50%{transform:rotate(-7deg);}}
-  @keyframes armSwayRight{0%,100%{transform:rotate(0deg);}50%{transform:rotate(7deg);}}
-  .avatar.talking .robot-arm-left{animation:armTalkLeft .6s ease-in-out infinite;}
-  .avatar.talking .robot-arm-right{animation:armTalkRight .6s ease-in-out infinite;}
-  @keyframes armTalkLeft{0%,100%{transform:rotate(-4deg);}50%{transform:rotate(-14deg);}}
-  @keyframes armTalkRight{0%,100%{transform:rotate(4deg);}50%{transform:rotate(14deg);}}
+    transform-origin:8.3% 18.2%;animation:armSwayRight 4s ease-in-out infinite;}
+  @keyframes armSwayLeft{0%,100%{transform:rotate(0deg);}50%{transform:rotate(-3deg);}}
+  @keyframes armSwayRight{0%,100%{transform:rotate(0deg);}50%{transform:rotate(3deg);}}
+  .avatar.talking .robot-arm-left{animation:armTalkLeft .7s ease-in-out infinite;}
+  .avatar.talking .robot-arm-right{animation:armTalkRight .7s ease-in-out infinite;}
+  @keyframes armTalkLeft{0%,100%{transform:rotate(-2deg);}50%{transform:rotate(-7deg);}}
+  @keyframes armTalkRight{0%,100%{transform:rotate(2deg);}50%{transform:rotate(7deg);}}
   .robot-mouth{left:46.03%;top:12.88%;width:10.46%;height:5.27%;transition:transform .09s ease;}
-  .avatar.talking .robot-mouth{animation:mouthTalk .28s ease-in-out infinite;}
-  @keyframes mouthTalk{0%,100%{transform:scaleY(1);}50%{transform:scaleY(2.1);}}
+  .avatar.talking .robot-mouth{animation:mouthTalk .3s ease-in-out infinite;}
+  @keyframes mouthTalk{0%,100%{transform:scaleY(1);}50%{transform:scaleY(1.6);}}
   .avatar-caption{text-align:center;color:var(--text-muted);font-size:13px;font-weight:500;padding:0 12px 18px;}
   .lang-toggle{display:flex;justify-content:center;gap:10px;padding:0 12px 22px;}
   .lang-btn{background:#fff;color:var(--text-dark);border:1.5px solid #e4dbc8;border-radius:999px;
@@ -223,6 +224,42 @@
   </div>
 </header>
 
+<section class="ai-showcase" id="aiShowcase">
+  <div class="container">
+    <div class="section-head">
+      <span class="kicker">🎓 Sitemizin Kalbi</span>
+      <h2>AI Asistanımızla Tanışın</h2>
+      <p>İster sesli konuş, ister yaz — Türkçe ya da İngilizce. Kurslarımız hakkında ya da aklına gelen her şeyi sorabilirsin.</p>
+    </div>
+    <div class="ai-card">
+      <div class="avatar-wrap">
+        <div class="avatar" id="avatar">
+          <img class="robot-layer robot-body" src="assets/robot/robot_body.png" alt="AI asistan robotu" draggable="false">
+          <img class="robot-layer robot-arm robot-arm-left" src="assets/robot/robot_arm_left.png" alt="" draggable="false">
+          <img class="robot-layer robot-arm robot-arm-right" src="assets/robot/robot_arm_right.png" alt="" draggable="false">
+          <img class="robot-layer robot-mouth" src="assets/robot/robot_mouth.png" alt="" draggable="false">
+        </div>
+      </div>
+      <div class="avatar-caption" id="avatarCaption">Merhaba! Konuşmaya hazırım 👋</div>
+      <div class="lang-toggle">
+        <button class="lang-btn active" id="langTr" type="button">🇹🇷 Türkçe</button>
+        <button class="lang-btn" id="langEn" type="button">🇬🇧 English</button>
+      </div>
+      <button class="mic-big" id="micBtn" type="button">
+        <span class="mic-icon">🎤</span>
+        <span class="mic-label" id="micLabel">Konuşmaya Başla</span>
+      </button>
+      <div class="voice-log" id="voiceLog"></div>
+      <div class="voice-status" id="voiceStatus"></div>
+      <form class="text-input-row" id="textForm">
+        <input type="text" id="textInput" placeholder="Ya da buraya yaz..." autocomplete="off">
+        <button type="submit" aria-label="Gönder">➤</button>
+      </form>
+      <div class="voice-hint">Mikrofona bir kere bas, konuşmaya başla - cevap bitince otomatik tekrar dinler. Bitirmek için tekrar bas.</div>
+    </div>
+  </div>
+</section>
+
 <section class="hero">
   <div class="container hero-grid">
     <div>
@@ -261,42 +298,6 @@
         </select>
         <button class="btn btn-navy" style="width:100%;justify-content:center;" type="submit">Bilgi Talep Et →</button>
       </form>
-    </div>
-  </div>
-</section>
-
-<section class="ai-showcase" id="aiShowcase">
-  <div class="container">
-    <div class="section-head">
-      <span class="kicker">🎓 Sitemizin Kalbi</span>
-      <h2>AI Asistanımızla Tanışın</h2>
-      <p>İster sesli konuş, ister yaz — Türkçe ya da İngilizce. Kurslarımız hakkında ya da aklına gelen her şeyi sorabilirsin.</p>
-    </div>
-    <div class="ai-card">
-      <div class="avatar-wrap">
-        <div class="avatar" id="avatar">
-          <img class="robot-layer robot-body" src="assets/robot/robot_body.png" alt="AI asistan robotu" draggable="false">
-          <img class="robot-layer robot-arm robot-arm-left" src="assets/robot/robot_arm_left.png" alt="" draggable="false">
-          <img class="robot-layer robot-arm robot-arm-right" src="assets/robot/robot_arm_right.png" alt="" draggable="false">
-          <img class="robot-layer robot-mouth" src="assets/robot/robot_mouth.png" alt="" draggable="false">
-        </div>
-      </div>
-      <div class="avatar-caption" id="avatarCaption">Merhaba! Konuşmaya hazırım 👋</div>
-      <div class="lang-toggle">
-        <button class="lang-btn active" id="langTr" type="button">🇹🇷 Türkçe</button>
-        <button class="lang-btn" id="langEn" type="button">🇬🇧 English</button>
-      </div>
-      <button class="mic-big" id="micBtn" type="button">
-        <span class="mic-icon">🎤</span>
-        <span class="mic-label" id="micLabel">Konuşmaya Başla</span>
-      </button>
-      <div class="voice-log" id="voiceLog"></div>
-      <div class="voice-status" id="voiceStatus"></div>
-      <form class="text-input-row" id="textForm">
-        <input type="text" id="textInput" placeholder="Ya da buraya yaz..." autocomplete="off">
-        <button type="submit" aria-label="Gönder">➤</button>
-      </form>
-      <div class="voice-hint">Mikrofona bir kere bas, konuşmaya başla - cevap bitince otomatik tekrar dinler. Bitirmek için tekrar bas.</div>
     </div>
   </div>
 </section>
