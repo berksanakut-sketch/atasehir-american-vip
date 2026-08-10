@@ -513,13 +513,26 @@
       });
   }
 
+  // Detects the language of what the visitor actually said, from the transcript text
+  // itself - rather than trusting the TR/EN toggle blindly. The toggle only controls which
+  // language SpeechRecognition listens for (Web Speech API requires picking one up front);
+  // this catches the case where someone leaves the toggle on Turkish but then asks a
+  // question in English (or vice versa), so the reply still matches what they actually said.
+  function detectSpokenLang(text){
+    if(/[ığşçöüİĞŞÇÖÜ]/.test(text)) return 'tr';
+    var trWords = /\b(merhaba|selam|nasılsın|nasılsınız|iyiyim|teşekkür|tesekkur|evet|hayır|hayir|ben|sen|biz|siz|nerede|kaç|kac|ders|kurs|fiyat|kayıt|kayit|merhabalar|günaydın|gunaydin)\b/i;
+    if(trWords.test(text)) return 'tr';
+    return 'en';
+  }
+
   function handleTranscript(transcript){
     addMsg('user', transcript);
-    statusEl.textContent = selectedLang === 'tr' ? 'Düşünüyorum...' : 'Thinking...';
-    getAIReply(transcript, selectedLang).then(function(reply){
+    var replyLang = detectSpokenLang(transcript);
+    statusEl.textContent = replyLang === 'tr' ? 'Düşünüyorum...' : 'Thinking...';
+    getAIReply(transcript, replyLang).then(function(reply){
       statusEl.textContent = '';
       addMsg('ai', reply);
-      speakReply(reply, selectedLang);
+      speakReply(reply, replyLang);
     });
   }
 
