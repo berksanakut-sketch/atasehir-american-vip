@@ -464,14 +464,24 @@
     return voices.find(function(v){ return v.lang && v.lang.indexOf(prefix) === 0; });
   }
 
+  // Browser TTS voices read emoji characters out loud as their Unicode name (e.g. "waving
+  // hand sign"), which sounds broken/robotic - strip them before speaking. They're kept in
+  // the visible chat bubble text (addMsg uses the original, un-stripped string), just not
+  // spoken.
+  function stripEmojiForSpeech(text){
+    return text.replace(/\p{Extended_Pictographic}/gu, '').replace(/\s{2,}/g, ' ').trim();
+  }
+
   function speakReply(text, lang){
     if(!('speechSynthesis' in window)) return;
-    var utter = new SpeechSynthesisUtterance(text);
+    var utter = new SpeechSynthesisUtterance(stripEmojiForSpeech(text));
     utter.lang = lang === 'tr' ? 'tr-TR' : 'en-US';
-    // Slightly higher pitch + slightly slower pace reads as warmer/friendlier than the
-    // browser's flat default (pitch 1 / rate 1).
-    utter.pitch = 1.15;
-    utter.rate = 0.95;
+    // Slightly higher pitch + slower pace + a touch more warmth reads friendlier than the
+    // browser's flat robotic default (pitch 1 / rate 1). This is still browser built-in TTS
+    // though - a real human-sounding voice would need a paid TTS service (e.g. ElevenLabs),
+    // which is a separate upgrade if you want to go further.
+    utter.pitch = 1.1;
+    utter.rate = 0.92;
     var voices = window.speechSynthesis.getVoices();
     var sweetVoice = pickSweetVoice(voices, lang);
     if(sweetVoice) utter.voice = sweetVoice;
