@@ -463,49 +463,23 @@
     window.speechSynthesis.onvoiceschanged = function(){ window.speechSynthesis.getVoices(); };
   }
 
-  // ---------- AI brain: Google Gemini free-tier API ----------
-  // 1. Get a free key (no card) at https://aistudio.google.com/apikey
-  // 2. In Google Cloud Console, restrict the key to HTTP referrer
-  //    "https://berksanakut-sketch.github.io/*" so it only works from this site.
-  // 3. Paste the key below. Leave empty to keep the placeholder reply.
-  var GEMINI_API_KEY = "[REMOVED-OLD-EXPOSED-KEY]";
-  // "gemini-2.0-flash" returned a 0-quota RESOURCE_EXHAUSTED error on this key's free tier
-  // (older model, no free quota left for new projects) - "gemini-flash-latest" is the alias
-  // that actually has free-tier quota right now. If this 404s later (Google renames/retires
-  // models over time), check https://aistudio.google.com for the current free-tier alias.
-  var GEMINI_MODEL = "gemini-flash-latest";
-  var SYSTEM_PROMPT = "You are a warm, casual, friendly English-speaking conversation buddy " +
-    "on the website of 'Ataşehir American VIP', an English language school in Ataşehir, " +
-    "Istanbul. The visitor may write in Turkish or English - it doesn't matter which. " +
-    "ALWAYS reply only in English, in 2-4 short, natural sentences, like chatting with a " +
-    "friendly native speaker - not a formal script. You can talk about ANYTHING the visitor " +
-    "brings up (daily life, opinions, jokes, random questions), the same way a real English " +
-    "conversation partner would, since that's genuinely useful English practice for them. " +
-    "Only steer toward the school (call (0216) 519 95 95 or WhatsApp) when the visitor " +
-    "actually asks about courses/enrollment - don't force it into unrelated chat. Never " +
-    "invent prices, addresses or guarantees you don't know.";
+  // ---------- AI brain: Google Gemini, via a Cloudflare Worker proxy ----------
+  // The Gemini API key used to live here in plain text (visible in page source AND in
+  // this public GitHub repo - a real security hole, scraped keys get abused). It now
+  // lives server-side only, as a secret on the Worker below (see gemini-proxy/src/index.js
+  // in this repo). The browser only ever talks to the proxy, never to Google directly, so
+  // no key is ever shipped to the client.
+  var AI_PROXY_URL = "https://atasehir-gemini-proxy.berk-sanakut.workers.dev";
 
   function getAIReply(userText){
-    if(!GEMINI_API_KEY){
-      return Promise.resolve("Thanks for your question! Our live AI tutor is being connected right now - " +
-        "in the meantime, feel free to call us at (0216) 519 95 95 or write on WhatsApp, " +
-        "and our team will help you in English right away.");
-    }
-    var url = "https://generativelanguage.googleapis.com/v1beta/models/" + GEMINI_MODEL +
-      ":generateContent?key=" + GEMINI_API_KEY;
-    return fetch(url, {
+    return fetch(AI_PROXY_URL, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        contents: [{ role: "user", parts: [{ text: userText }] }],
-        systemInstruction: { parts: [{ text: SYSTEM_PROMPT }] }
-      })
+      body: JSON.stringify({ text: userText })
     })
       .then(function(r){ return r.json(); })
       .then(function(data){
-        var text = data && data.candidates && data.candidates[0] && data.candidates[0].content &&
-          data.candidates[0].content.parts && data.candidates[0].content.parts[0] &&
-          data.candidates[0].content.parts[0].text;
+        var text = data && data.text;
         return text ? text.trim() : "Sorry, I couldn't quite process that - please call us at (0216) 519 95 95.";
       })
       .catch(function(){
