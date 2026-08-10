@@ -612,13 +612,29 @@
   // this click handler "unlocks" the speech synthesis engine for the rest of the page
   // session, so the later async utterance is allowed through.
   var speechUnlocked = false;
+  var pendingSpeech = null; // { text, lang } queued if something tried to speak before unlock
   function unlockSpeechSynthesis(){
     if(speechUnlocked || !('speechSynthesis' in window)) return;
     speechUnlocked = true;
     var unlock = new SpeechSynthesisUtterance('');
     unlock.volume = 0;
     window.speechSynthesis.speak(unlock);
+    if(pendingSpeech){
+      var p = pendingSpeech;
+      pendingSpeech = null;
+      speakReply(p.text, p.lang);
+    }
   }
+
+  // The greeting fires on its own (scroll into view / page load), with no click behind it,
+  // so the rule above means its speechSynthesis.speak() call is silently dropped on Safari -
+  // the greeting text still shows, but no voice plays, which read as "not greeting me" even
+  // though technically only the audio half failed. Fix: treat the very first tap/click/key
+  // ANYWHERE on the page (not just the mic button) as the unlock moment too, and if the
+  // greeting tried to speak before that happened, actually speak it now instead of losing it.
+  ['pointerdown', 'touchstart', 'click', 'keydown'].forEach(function(evt){
+    document.addEventListener(evt, unlockSpeechSynthesis, { passive: true, once: true });
+  });
 
   // Conversation mode: one mic press starts a hands-free back-and-forth (listen -> AI
   // replies -> automatically listens again) instead of requiring a press for every single
@@ -737,7 +753,14 @@
   function greet(){
     var text = selectedLang === 'tr' ? GREETING_TR : GREETING_EN;
     addMsg('ai', text);
-    speakReply(text, selectedLang);
+    if(speechUnlocked){
+      speakReply(text, selectedLang);
+    } else {
+      // No user gesture yet on this page load - speaking now would be silently dropped on
+      // Safari. Queue it; the first-interaction listener above will speak it the moment
+      // the visitor taps/scrolls/clicks anywhere.
+      pendingSpeech = { text: text, lang: selectedLang };
+    }
   }
   var aiCard = document.querySelector('.ai-card');
   var greeted = false;
