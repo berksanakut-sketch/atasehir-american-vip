@@ -497,8 +497,19 @@
   // hand sign"), which sounds broken/robotic - strip them before speaking. They're kept in
   // the visible chat bubble text (addMsg uses the original, un-stripped string), just not
   // spoken.
+  //
+  // Uses explicit \u{...} code point ranges instead of \p{Extended_Pictographic} - that
+  // Unicode property escape isn't recognized by every Safari version (support for specific
+  // \p{} property names lagged behind the base "u flag + \p{} syntax" for years), and an
+  // unrecognized property name makes the regex LITERAL a syntax error, which fails the
+  // entire enclosing <script> block at parse time - not just this function. That took down
+  // the whole assistant (no greeting, no replies to typed/spoken questions - not just
+  // silent emoji) on affected Safari versions. Plain code point ranges have no such gap.
   function stripEmojiForSpeech(text){
-    return text.replace(/\p{Extended_Pictographic}/gu, '').replace(/\s{2,}/g, ' ').trim();
+    return text
+      .replace(/[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}\u{2190}-\u{21FF}\u{2B00}-\u{2BFF}\u{1F1E6}-\u{1F1FF}\u{FE0F}\u{200D}]/gu, '')
+      .replace(/\s{2,}/g, ' ')
+      .trim();
   }
 
   function speakReply(text, lang, onDone){
