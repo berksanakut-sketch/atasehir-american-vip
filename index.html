@@ -127,51 +127,52 @@
   .float-whatsapp{position:fixed;bottom:26px;right:26px;background:#25D366;color:#fff;width:58px;height:58px;border-radius:50%;
     display:flex;align-items:center;justify-content:center;font-size:28px;box-shadow:0 12px 28px -8px rgba(37,211,102,0.7);z-index:99;}
 
-  /* ---------- Voice practice widget ---------- */
-  .float-mic{position:fixed;bottom:96px;right:26px;background:var(--navy);color:var(--gold);width:58px;height:58px;border-radius:50%;
-    display:flex;align-items:center;justify-content:center;font-size:26px;box-shadow:0 12px 28px -8px rgba(11,31,58,0.6);z-index:99;
-    border:none;cursor:pointer;transition:transform .2s ease;}
-  .float-mic:hover{transform:scale(1.06);}
-  .float-mic.listening{background:#c0392b;color:#fff;animation:pulse 1.2s infinite;}
-  @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(192,57,43,0.55);}70%{box-shadow:0 0 0 16px rgba(192,57,43,0);}100%{box-shadow:0 0 0 0 rgba(192,57,43,0);}}
-
-  .voice-panel{position:fixed;bottom:166px;right:26px;width:320px;max-width:calc(100vw - 40px);
-    max-height:min(560px, calc(100vh - 190px));background:#fff;border-radius:18px;
-    box-shadow:0 24px 48px -12px rgba(11,31,58,0.35);z-index:101;display:none;flex-direction:column;overflow:hidden;border:1px solid #eee;}
-  .voice-panel.open{display:flex;}
-  .voice-panel-head, .avatar-wrap, .avatar-caption, .voice-status, .voice-hint{flex-shrink:0;}
-  .voice-panel-head{background:var(--navy);color:#fff;padding:16px 18px;display:flex;justify-content:space-between;align-items:center;}
-  .voice-panel-head b{font-size:14.5px;}
-  .voice-panel-head span{font-size:12px;color:#b7c1d3;display:block;margin-top:2px;}
-  .voice-panel-close{background:none;border:none;color:#fff;font-size:18px;cursor:pointer;opacity:.8;}
-  .avatar-wrap{display:flex;justify-content:center;padding:18px 0 6px;background:linear-gradient(180deg,var(--navy),var(--navy-light));}
-  .avatar{width:84px;height:84px;border-radius:50%;background:linear-gradient(160deg,#f0d9a8,var(--gold));position:relative;
+  /* ---------- AI assistant showcase (the site's "heart" - a real section, not a hidden
+     corner widget) ---------- */
+  .ai-showcase{background:var(--navy-dark);color:#fff;position:relative;overflow:hidden;}
+  .ai-showcase::before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 20% 20%, rgba(212,168,83,0.16), transparent 45%);}
+  .ai-showcase .section-head h2, .ai-showcase .section-head p{color:#fff;}
+  .ai-showcase .section-head p{color:#b7c1d3;}
+  .ai-card{position:relative;max-width:560px;margin:0 auto;background:linear-gradient(160deg,#ffffff,#f3ece0);
+    border-radius:24px;padding:38px 32px 30px;box-shadow:var(--shadow);}
+  .avatar-wrap{display:flex;justify-content:center;padding:0 0 10px;}
+  .avatar{width:88px;height:88px;border-radius:50%;background:linear-gradient(160deg,#f0d9a8,var(--gold));position:relative;
     box-shadow:0 8px 20px -6px rgba(212,168,83,0.6);animation:bob 3s ease-in-out infinite;}
   @keyframes bob{0%,100%{transform:translateY(0);}50%{transform:translateY(-4px);}}
-  .avatar .eye{position:absolute;width:9px;height:9px;background:var(--navy-dark);border-radius:50%;top:32px;animation:blink 4.5s infinite;}
-  .avatar .eye.l{left:22px;} .avatar .eye.r{right:22px;}
+  .avatar .eye{position:absolute;width:9px;height:9px;background:var(--navy-dark);border-radius:50%;top:34px;animation:blink 4.5s infinite;}
+  .avatar .eye.l{left:23px;} .avatar .eye.r{right:23px;}
   @keyframes blink{0%,92%,100%{transform:scaleY(1);}95%{transform:scaleY(0.1);}}
-  .avatar .mouth{position:absolute;left:50%;top:52px;transform:translateX(-50%);width:26px;height:6px;border-radius:6px;
+  .avatar .mouth{position:absolute;left:50%;top:55px;transform:translateX(-50%);width:27px;height:6px;border-radius:6px;
     background:var(--navy-dark);transition:height .09s ease, border-radius .09s ease;}
   .avatar.talking .mouth{animation:talk .28s ease-in-out infinite;}
   @keyframes talk{0%,100%{height:6px;border-radius:6px;}50%{height:16px;border-radius:10px;}}
-  .avatar-caption{text-align:center;color:#dfe6f0;font-size:11.5px;padding:2px 12px 8px;background:var(--navy-light);}
-  .lang-toggle{display:flex;justify-content:center;gap:8px;padding:0 12px 14px;background:var(--navy-light);}
-  .lang-btn{background:rgba(255,255,255,0.1);color:#dfe6f0;border:1px solid rgba(255,255,255,0.25);border-radius:999px;
-    padding:5px 14px;font-size:12px;font-weight:600;cursor:pointer;transition:background .15s ease;}
-  .lang-btn.active{background:var(--gold);color:var(--navy-dark);border-color:var(--gold);}
-  .voice-log{padding:16px 18px;flex:1 1 auto;min-height:60px;overflow-y:auto;display:flex;flex-direction:column;gap:10px;font-size:13.5px;}
+  .avatar-caption{text-align:center;color:var(--text-muted);font-size:13px;font-weight:500;padding:0 12px 18px;}
+  .lang-toggle{display:flex;justify-content:center;gap:10px;padding:0 12px 22px;}
+  .lang-btn{background:#fff;color:var(--text-dark);border:1.5px solid #e4dbc8;border-radius:999px;
+    padding:7px 16px;font-size:13px;font-weight:600;cursor:pointer;transition:all .15s ease;}
+  .lang-btn.active{background:var(--navy);color:#fff;border-color:var(--navy);}
+  .mic-big{display:flex;flex-direction:column;align-items:center;gap:4px;margin:0 auto 24px;
+    background:linear-gradient(160deg,var(--gold-light),var(--gold));border:none;border-radius:26px;
+    padding:18px 44px;cursor:pointer;box-shadow:0 14px 30px -10px rgba(212,168,83,0.65);transition:transform .2s ease;}
+  .mic-big:hover{transform:translateY(-2px);}
+  .mic-big .mic-icon{font-size:32px;line-height:1;}
+  .mic-big .mic-label{font-size:13px;font-weight:700;color:var(--navy-dark);text-transform:uppercase;letter-spacing:.03em;}
+  .mic-big.listening{background:linear-gradient(160deg,#e5766b,#c0392b);animation:pulse-big 1.2s infinite;}
+  .mic-big.listening .mic-label{color:#fff;}
+  @keyframes pulse-big{0%{box-shadow:0 0 0 0 rgba(192,57,43,0.5);}70%{box-shadow:0 0 0 18px rgba(192,57,43,0);}100%{box-shadow:0 0 0 0 rgba(192,57,43,0);}}
+  .voice-log{max-height:260px;overflow-y:auto;display:flex;flex-direction:column;gap:10px;font-size:13.5px;
+    padding:14px;background:rgba(255,255,255,0.55);border-radius:14px;border:1px solid #eee2cf;margin-bottom:12px;}
   .voice-msg{padding:10px 13px;border-radius:12px;max-width:88%;}
   .voice-msg.user{align-self:flex-end;background:var(--navy);color:#fff;border-bottom-right-radius:3px;}
-  .voice-msg.ai{align-self:flex-start;background:var(--cream);border:1px solid #efe6d4;border-bottom-left-radius:3px;}
+  .voice-msg.ai{align-self:flex-start;background:#fff;border:1px solid #efe6d4;border-bottom-left-radius:3px;}
   .voice-msg .lbl{display:block;font-size:10.5px;opacity:.65;margin-bottom:3px;text-transform:uppercase;letter-spacing:.04em;}
-  .text-input-row{display:flex;gap:8px;padding:0 18px 10px;flex-shrink:0;}
-  .text-input-row input{flex:1;padding:10px 14px;border-radius:999px;border:1px solid #e4dbc8;background:#fff;font-size:13.5px;font-family:inherit;}
+  .text-input-row{display:flex;gap:8px;margin-bottom:12px;}
+  .text-input-row input{flex:1;padding:11px 15px;border-radius:999px;border:1px solid #e4dbc8;background:#fff;font-size:14px;font-family:inherit;}
   .text-input-row input:focus{outline:2px solid var(--gold);outline-offset:1px;}
-  .text-input-row button{width:38px;height:38px;flex-shrink:0;border-radius:50%;border:none;background:var(--navy);color:var(--gold);font-size:15px;cursor:pointer;}
+  .text-input-row button{width:40px;height:40px;flex-shrink:0;border-radius:50%;border:none;background:var(--navy);color:var(--gold);font-size:15px;cursor:pointer;}
   .text-input-row button:hover{background:var(--navy-light);}
-  .voice-hint{padding:0 18px 16px;font-size:12px;color:var(--text-muted);border-top:1px solid #f0ece0;flex-shrink:0;}
-  .voice-status{padding:6px 18px;font-size:12px;color:var(--gold);font-weight:600;min-height:18px;}
+  .voice-hint{font-size:12px;color:var(--text-muted);text-align:center;}
+  .voice-status{text-align:center;font-size:12.5px;color:var(--navy);font-weight:600;min-height:18px;margin-bottom:4px;}
 
   @media (max-width:940px){
     .nav-links, .nav-phone{display:none;}
@@ -186,14 +187,8 @@
   @media (max-width:600px){
     .prog-grid, .why-grid{grid-template-columns:1fr;}
     .hero-stats{grid-template-columns:1fr 1fr;}
-  }
-  @media (max-width:480px){
-    /* The chat widget used fixed 320px width + asymmetric right-only margin, which left
-       lopsided, cramped gutters on narrow phones (e.g. 44px left / 26px right on a 390px
-       screen). Full-bleed with even side margins uses the screen properly instead. */
-    .voice-panel{width:auto;left:14px;right:14px;bottom:142px;max-height:min(560px, calc(100vh - 162px));}
-    .float-mic{right:14px;bottom:78px;width:52px;height:52px;font-size:23px;}
-    .float-whatsapp{right:14px;bottom:16px;width:52px;height:52px;font-size:25px;}
+    .ai-card{padding:30px 22px 24px;}
+    .mic-big{padding:16px 34px;}
   }
 </style>
 </head>
@@ -203,6 +198,7 @@
   <div class="nav">
     <div class="brand">🎓 Ataşehir <span>American VIP</span></div>
     <nav class="nav-links">
+      <a href="#aiShowcase">🎤 AI Asistan</a>
       <a href="#programlar">Programlar</a>
       <a href="#neden-biz">Neden Biz</a>
       <a href="#istatistik">Rakamlarla Biz</a>
@@ -254,6 +250,41 @@
         </select>
         <button class="btn btn-navy" style="width:100%;justify-content:center;" type="submit">Bilgi Talep Et →</button>
       </form>
+    </div>
+  </div>
+</section>
+
+<section class="ai-showcase" id="aiShowcase">
+  <div class="container">
+    <div class="section-head">
+      <span class="kicker">🎓 Sitemizin Kalbi</span>
+      <h2>AI Asistanımızla Tanışın</h2>
+      <p>İster sesli konuş, ister yaz — Türkçe ya da İngilizce. Kurslarımız hakkında ya da aklına gelen her şeyi sorabilirsin.</p>
+    </div>
+    <div class="ai-card">
+      <div class="avatar-wrap">
+        <div class="avatar" id="avatar">
+          <div class="eye l"></div>
+          <div class="eye r"></div>
+          <div class="mouth"></div>
+        </div>
+      </div>
+      <div class="avatar-caption" id="avatarCaption">Merhaba! Konuşmaya hazırım 👋</div>
+      <div class="lang-toggle">
+        <button class="lang-btn active" id="langTr" type="button">🇹🇷 Türkçe</button>
+        <button class="lang-btn" id="langEn" type="button">🇬🇧 English</button>
+      </div>
+      <button class="mic-big" id="micBtn" type="button">
+        <span class="mic-icon">🎤</span>
+        <span class="mic-label" id="micLabel">Konuşmaya Başla</span>
+      </button>
+      <div class="voice-log" id="voiceLog"></div>
+      <div class="voice-status" id="voiceStatus"></div>
+      <form class="text-input-row" id="textForm">
+        <input type="text" id="textInput" placeholder="Ya da buraya yaz..." autocomplete="off">
+        <button type="submit" aria-label="Gönder">➤</button>
+      </form>
+      <div class="voice-hint">Mikrofona bir kere bas, konuşmaya başla - cevap bitince otomatik tekrar dinler. Bitirmek için tekrar bas.</div>
     </div>
   </div>
 </section>
@@ -388,45 +419,13 @@
 
 <a class="float-whatsapp" href="https://wa.me/902165199595" target="_blank" rel="noopener" aria-label="WhatsApp">💬</a>
 
-<button class="float-mic" id="micBtn" aria-label="Sesli İngilizce Pratik" title="Bir kere bas, konuşmaya başla - sohbet otomatik devam eder, bitirmek için tekrar bas">🎤</button>
-
-<div class="voice-panel" id="voicePanel">
-  <div class="voice-panel-head">
-    <div>
-      <b>🎓 American VIP Asistanı</b>
-      <span>İstersen Türkçe, istersen İngilizce konuş</span>
-    </div>
-    <button class="voice-panel-close" id="voiceClose">✕</button>
-  </div>
-  <div class="avatar-wrap">
-    <div class="avatar" id="avatar">
-      <div class="eye l"></div>
-      <div class="eye r"></div>
-      <div class="mouth"></div>
-    </div>
-  </div>
-  <div class="avatar-caption" id="avatarCaption">Merhaba! Konuşmaya hazırım 👋</div>
-  <div class="lang-toggle">
-    <button class="lang-btn active" id="langTr" type="button">🇹🇷 Türkçe</button>
-    <button class="lang-btn" id="langEn" type="button">🇬🇧 English</button>
-  </div>
-  <div class="voice-log" id="voiceLog"></div>
-  <div class="voice-status" id="voiceStatus"></div>
-  <form class="text-input-row" id="textForm">
-    <input type="text" id="textInput" placeholder="Yazarak sor (mikrofon şart değil)..." autocomplete="off">
-    <button type="submit" aria-label="Gönder">➤</button>
-  </form>
-  <div class="voice-hint">Yazarak ya da mikrofona basıp konuşarak sorabilirsin - kursla ilgili ya da aklına gelen her şeyi. Sesli kullanım için tarayıcının mikrofon iznine "izin ver" demen gerekir.</div>
-</div>
-
 <script>
 /* ---------- Voice practice widget ---------- */
 (function(){
   var micBtn = document.getElementById('micBtn');
-  var panel = document.getElementById('voicePanel');
+  var micLabel = document.getElementById('micLabel');
   var log = document.getElementById('voiceLog');
   var statusEl = document.getElementById('voiceStatus');
-  var closeBtn = document.getElementById('voiceClose');
   var listening = false;
   var recognition = null;
 
@@ -572,10 +571,6 @@
     });
   }
 
-  function openPanel(){
-    panel.classList.add('open');
-  }
-
   // iOS Safari only allows speechSynthesis.speak() to actually produce audio when it's
   // called synchronously inside a real user-gesture handler (click/tap). Our real replies
   // are spoken several async steps later (after speech recognition + the Gemini fetch), by
@@ -602,6 +597,7 @@
     if(listening && recognition) recognition.stop();
     if('speechSynthesis' in window) window.speechSynthesis.cancel();
     micBtn.classList.remove('listening');
+    micLabel.textContent = 'Konuşmaya Başla';
     statusEl.textContent = '';
     avatarCaption.textContent = 'Merhaba! Konuşmaya hazırım 👋';
   }
@@ -621,6 +617,7 @@
     recognition.onstart = function(){
       listening = true;
       micBtn.classList.add('listening');
+      micLabel.textContent = 'Dinliyor... (bitirmek için bas)';
       statusEl.textContent = 'Dinliyorum... konuşabilirsin.';
       avatarCaption.textContent = 'Listening...';
     };
@@ -641,6 +638,7 @@
     recognition.onend = function(){
       listening = false;
       micBtn.classList.remove('listening');
+      if(conversationActive) micLabel.textContent = 'Sohbet açık... (bitirmek için bas)';
       // Recognition ended without picking anything up (silence timeout) - if the session
       // is still active, just listen again instead of making the visitor press the button.
       if(conversationActive && !gotResult){
@@ -657,18 +655,12 @@
 
   micBtn.addEventListener('click', function(){
     unlockSpeechSynthesis();
-    openPanel();
     if(conversationActive){
       stopConversation();
       return;
     }
     conversationActive = true;
     startListening();
-  });
-
-  closeBtn.addEventListener('click', function(){
-    panel.classList.remove('open');
-    stopConversation();
   });
 
   // ---------- Text input (no microphone permission needed at all) ----------
@@ -682,21 +674,19 @@
     var value = textInput.value.trim();
     if(!value) return;
     textInput.value = '';
-    openPanel();
     handleTranscript(value);
   });
 
   // ---------- Auto-greeting on page load ----------
-  // Opens the panel by itself shortly after the page loads and has the avatar say hello,
-  // instead of waiting for the visitor to notice and click the mic button. Speech
-  // synthesis without a prior user gesture is unreliable on some browsers (notably
-  // Safari/iOS - see the unlockSpeechSynthesis comment below), so this always shows the
-  // greeting as text regardless, and only *attempts* to speak it - if the browser blocks
-  // the audio, the visitor still sees a working, welcoming panel.
+  // Has the avatar say hello shortly after the page loads, instead of waiting for the
+  // visitor to notice and press the mic themselves. Speech synthesis without a prior user
+  // gesture is unreliable on some browsers (notably Safari/iOS - see the
+  // unlockSpeechSynthesis comment below), so this always shows the greeting as text
+  // regardless, and only *attempts* to speak it - if the browser blocks the audio, the
+  // visitor still sees a working, welcoming assistant.
   var GREETING_TR = "Merhaba! Ataşehir American VIP'e hoş geldiniz 👋 Kurslar hakkında ya da aklına gelen her şeyi bana sorabilirsin - yazarak ya da mikrofona basıp konuşarak, sen nasıl istersen.";
   var GREETING_EN = "Hi there! Welcome to Ataşehir American VIP 👋 Ask me anything about our courses, or really anything at all - you can type or press the microphone to talk, whichever you like.";
   function greet(){
-    openPanel();
     var text = selectedLang === 'tr' ? GREETING_TR : GREETING_EN;
     addMsg('ai', text);
     speakReply(text, selectedLang);
